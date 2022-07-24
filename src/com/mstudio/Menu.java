@@ -78,10 +78,10 @@ public class Menu {
             displayOrderMenu();
             String groceryOption = sc.nextLine();
             Integer groceryOptionNum = Integer.parseInt(groceryOption);
-            if(groceryOptionNum > productList.size() || groceryOptionNum < 0 || total == 0){
-                System.out.println("Please choose between 1-" + productList.size());
-                break;
-            }
+//            if(groceryOptionNum > productList.size() || groceryOptionNum < 0){
+//                System.out.println("Please choose between 1-" + productList.size());
+//                continue;
+//            }
             if(groceryOptionNum > 0 && groceryOptionNum < productList.size()){
                 displayProductInfo(groceryOptionNum);
                 String quanOption = sc.nextLine();
@@ -89,7 +89,13 @@ public class Menu {
                 calculateMoney(groceryOptionNum, quanOptionNum);
             }
             if(groceryOptionNum == 4){
-
+                viewCurrentOrder();
+            }
+            if(groceryOptionNum == 5){
+                total = 0;
+                bundleNumber.clear();
+                System.out.println("Order is cancelled successfully!");
+                return;
             }
 
         }
@@ -187,10 +193,17 @@ public class Menu {
         System.out.println("-------------------");
         System.out.println("     Your Order");
         System.out.println("-------------------");
-        for (Map.Entry<Integer, int[]> set : bundleNumber.entrySet()) {
-
-            System.out.println(set.getKey() + " = " + set.getValue());
-        }
+//        for (Map.Entry<Integer, int[]> set : bundleNumber.entrySet()) {
+//            for(int i = 0; i<set.getValue().length; i++){
+//                System.out.println(productList.get(set.getKey()).getName());
+//                System.out.println();
+//                if(set.getValue()[i] != 0){
+//                    System.out.println(set.getValue()[i] + " package of " + productList.get(set.getKey()).getPackagingPrice().get() + " items ($" + packagingPrice.get(packagingKey.get(i)) + " each)");
+//                }
+//            }
+//            System.out.println(set.getKey() + " = " + set.getValue());
+//        }
+        System.out.println("Total:" + total);
     }
 
     public static void checkOut(){
@@ -205,6 +218,143 @@ public class Menu {
     }
 
     public static void startAdminMode(){
+        Scanner sc = new Scanner(System.in);
+        while(true){
+            displayAdminOption();
+            String s = sc.nextLine();
+            int i = Integer.parseInt(s);
+            switch (i){
+                case 1:
+                    createProduct();
+                case 2:
+                    updateProduct();
+                case 3:
+                    deleteProduct();
+                case 4:
+                    viewProduct();
+                case 5:
+                    return;
+            }
+        }
+
+    }
+
+    public static void displayAdminOption(){
+        System.out.println("---------------------------");
+        System.out.println("        Admin Mode");
+        System.out.println("---------------------------");
+        System.out.println("1. Create Product");
+        System.out.println("2. Update Product");
+        System.out.println("3. Delete Product");
+        System.out.println("4. View Product");
+        System.out.println("5. Back to menu");
+    }
+
+    public static void createProduct(){
+        Scanner sc = new Scanner(System.in);
+        while (true){
+            System.out.println("---------------------------");
+            System.out.println("        Admin Mode");
+            System.out.println("    Create new product");
+            System.out.println("---------------------------");
+
+            System.out.println("Enter product name: ");
+            String productName = sc.nextLine();
+            System.out.println("Enter product code: ");
+            String productCode = sc.nextLine();
+            System.out.println("Enter product price: ");
+            String productPrice = sc.nextLine();
+
+            Product p1 = new Product(productName, productCode, Double.parseDouble(productPrice));
+            productList.add(p1);
+            System.out.println("Product is added successfully!");
+            System.out.println("Product Name: " + productName);
+            System.out.println("Product Code: " + productCode);
+            System.out.println("Product Price: " + productPrice);
+            break;
+        }
+    }
+
+    public static void updateProduct(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println();
+        System.out.println("---------------------------");
+        System.out.println("        Admin Mode");
+        System.out.println("      Update product");
+        System.out.println("---------------------------");
+
+        for(int i=0; i<productList.size(); i++){
+            System.out.println(i+1 + ". " +productList.get(i).getName());
+        }
+        System.out.println();
+        String s = sc.nextLine();
+        int i = Integer.parseInt(s);
+        updateProductProperty(i);
+    }
+
+    public static void updateProductProperty(int i){
+        Scanner sc = new Scanner(System.in);
+        Product product = productList.get(i - 1);
+        System.out.println("Old product name: " + product.getName());
+        System.out.println("New product name: ");
+        String newProductName = sc.nextLine();
+        System.out.println("Old product code: " + product.getCode());
+        System.out.println("New product code: ");
+        String newProductCode = sc.nextLine();
+        System.out.println("Old product price: " + product.getPrice());
+        System.out.println("New product price: ");
+        String pp = sc.nextLine();
+        double newProductPrice = Double.parseDouble(pp);
+        if(!newProductName.equals(product.getName())){
+            product.setName(newProductName);
+        }
+        if(!newProductCode.equals(product.getCode())){
+            product.setCode(newProductCode);
+        }
+        if(newProductPrice != product.getPrice()){
+            product.setPrice(newProductPrice);
+        }
+        System.out.println(productList.get(i - 1).toString());
+
+    }
+
+    public static void deleteProduct(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println();
+        System.out.println("---------------------------");
+        System.out.println("        Admin Mode");
+        System.out.println("      Delete product");
+        System.out.println("---------------------------");
+
+        for(int i=0; i<productList.size(); i++){
+            System.out.println(i+1 + ". " +productList.get(i).getName());
+        }
+        System.out.println();
+        String s = sc.nextLine();
+        int i = Integer.parseInt(s);
+        System.out.println("Product " + productList.get(i).getName() + " is removed!");
+        productList.remove(i);
+        System.out.println("");
+    }
+
+    public static void viewProduct(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println();
+        System.out.println("---------------------------");
+        System.out.println("        Admin Mode");
+        System.out.println("      View product");
+        System.out.println("---------------------------");
+
+        for(int i=0; i<productList.size(); i++){
+            System.out.println(i+1 + ". " +productList.get(i).getName());
+        }
+        System.out.println();
+        String s = sc.nextLine();
+        int i = Integer.parseInt(s);
+        Product product = productList.get(i - 1);
+        System.out.println("Product Name: " + product.getName());
+        System.out.println("Product Code: " + product.getCode());
+        System.out.println("Product Price: $" + product.getPrice());
 
     }
 }
