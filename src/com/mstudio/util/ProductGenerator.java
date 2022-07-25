@@ -1,4 +1,4 @@
-package com.mstudio.IO;
+package com.mstudio.util;
 
 import com.mstudio.entity.Product;
 
@@ -21,6 +21,9 @@ public class ProductGenerator {
 
     List<Product> productList;
 
+    /**
+     * Non-parameterized constructor
+     */
     public ProductGenerator() {
         productList = new ArrayList<>();
         Product p1 = new Product(cheeseName,cheeseCode,cheesePrice);
@@ -45,10 +48,18 @@ public class ProductGenerator {
         productList.add(p3);
     }
 
+    /**
+     * Get method for productList
+     * @return productList
+     */
     public List<Product> getProductList() {
         return productList;
     }
 
+    /**
+     * Set method for updating productList
+     * @param productList
+     */
     public void setProductList(List<Product> productList) {
         this.productList = productList;
     }
