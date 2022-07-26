@@ -8,8 +8,6 @@ import com.mstudio.view.Display;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import static com.mstudio.view.Display.displayAdminOption;
-import static com.mstudio.view.Display.displayProductInfo;
 
 
 public class Menu {
