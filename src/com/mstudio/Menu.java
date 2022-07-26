@@ -3,9 +3,13 @@ package com.mstudio;
 import com.mstudio.util.ProductGenerator;
 import com.mstudio.entity.Product;
 import com.mstudio.util.Validation;
+import com.mstudio.view.Display;
 
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static com.mstudio.view.Display.displayAdminOption;
+import static com.mstudio.view.Display.displayProductInfo;
 
 
 public class Menu {
@@ -30,7 +34,7 @@ public class Menu {
     public static void start(){
         Scanner sc = new Scanner(System.in);
         while(true){
-            displayMenu();
+            Display.displayMenu();
             String option = sc.nextLine();
             if(!Validation.checkString("[1-3]", option)){
                 System.out.println("Please enter number between 1-3!");
@@ -48,39 +52,13 @@ public class Menu {
         }
     }
 
-
-    /**
-     * Display the main menu and its options
-     */
-    public static void displayMenu(){
-        System.out.println("---------------------------");
-        System.out.println("Welcome to BGL Order System");
-        System.out.println("---------------------------");
-        System.out.println("");
-        for(String s : menuOption()){
-            System.out.println(s);
-        }
-        System.out.println("");
-        System.out.println("Please choose an option: ");
-    }
-
-    /**
-     * All the options of menu
-     *
-     * @return options
-     */
-    public static String[] menuOption(){
-        String[] option = { "1. Order Grocery", "2. Admin Mode", "3. Exit"};
-        return option;
-    }
-
     /**
      * Start the order functionality
      */
     public static void startOrder(){
         Scanner sc = new Scanner(System.in);
         while(true){
-            displayOrderMenu();
+            Display.displayOrderMenu(productList, total);
             String groceryOption = sc.nextLine();
 
             if(total == 0){
@@ -97,7 +75,7 @@ public class Menu {
 
             Integer groceryOptionNum = Integer.parseInt(groceryOption);
             if(groceryOptionNum > 0 && groceryOptionNum <= productList.size()){
-                displayProductInfo(groceryOptionNum);
+                Display.displayProductInfo(groceryOptionNum, productList);
                 String quanOption = sc.nextLine();
                 int quanOptionNum = Integer.parseInt(quanOption);
                 calculateMoney(groceryOptionNum, quanOptionNum);
@@ -117,55 +95,6 @@ public class Menu {
 
     }
 
-    /**
-     * Display order's menu and its options
-     */
-    public static void displayOrderMenu(){
-        System.out.println("---------------------------");
-        System.out.println("        Order System");
-        System.out.println("---------------------------");
-        System.out.println("");
-        if(total != 0){
-            System.out.println("Total: $" + total);
-        }
-        System.out.println("");
-        System.out.println("Grocery list:");
-        int count = 0;
-        for(Product p: productList){
-            System.out.println(++count+". "+p.getName()+" $"+ p.getPrice());
-        }
-
-        if(total != 0){
-            System.out.println(++count + ". Checkout");
-            System.out.println(++count + ". Cancel Order");
-        }
-        System.out.println("Please choose an option: ");
-
-    }
-
-    /**
-     * Display one product's information (name, code and price)
-     *
-     * @param option
-     */
-    public static void displayProductInfo(int option){
-        Product product = productList.get(--option);
-        System.out.println("---------------------------");
-        System.out.println("        Order System");
-        System.out.println("---------------------------");
-        System.out.println("");
-        System.out.println("Name: "+product.getName());
-        System.out.println("Price: $"+product.getPrice());
-        System.out.println("");
-        System.out.println("Bundle Price: ");
-        product.displayBundlePrice();
-        if(product.getPackagingPrice().isEmpty()){
-            System.out.println("No bundle price available.");
-        }
-        System.out.println("");
-        System.out.println("Please enter the quantity: ");
-    }
-
 
     /**
      * Calculate total and apply the bundle price calculation
@@ -173,7 +102,7 @@ public class Menu {
      * @param quanOption User's input option for quantity of one grocery
      * @return contains and records number of bundle purchased
      */
-    public static int[] calculateMoney(Integer groceryOption, Integer quanOption){
+    public static double calculateMoney(Integer groceryOption, Integer quanOption){
         DecimalFormat df = new DecimalFormat("###.##");
         Product product = productList.get(groceryOption-1);
         Map<Integer, Double> packagingPrice = product.getPackagingPrice();
@@ -201,7 +130,7 @@ public class Menu {
             total += tempTotal;
             total = Double.parseDouble(df.format(total));
             System.out.println("Total: $" + total);
-            return bundleArray;
+            return total;
         }
 
         // Bundle price product
@@ -223,7 +152,7 @@ public class Menu {
             bundleArray[i] = temp / packagingKey.get(i);
             if(bundleArray[i] != 0){
                 System.out.println(bundleArray[i] + " package of " + packagingKey.get(i) + " items ($" + packagingPrice.get(packagingKey.get(i)) + " each)");
-                tempTotal += packagingPrice.get(packagingKey.get(i)) * bundleArray[i];
+                tempTotal += Double.parseDouble(df.format(packagingPrice.get(packagingKey.get(i)) * bundleArray[i]));
             }
             temp = temp % packagingKey.get(i);
             if(temp == 0){
@@ -234,7 +163,7 @@ public class Menu {
         if(temp != 0){
             bundleArray[packagingKey.size()] = temp;
             System.out.println(bundleArray[packagingKey.size()] + " package of " + 1 + " item ($" + product.getPrice() + " each)");
-            tempTotal = Double.parseDouble(df.format(temp*product.getPrice()));
+            tempTotal = Double.parseDouble(df.format(temp * product.getPrice()));
         }
         total += tempTotal;
         total = Double.parseDouble(df.format(total));
@@ -243,7 +172,7 @@ public class Menu {
         System.out.println();
 
         bundleNumber.put(groceryOption-1, bundleArray);
-        return bundleArray;
+        return total;
     }
 
     /**
@@ -283,7 +212,7 @@ public class Menu {
     public static void startAdminMode(){
         Scanner sc = new Scanner(System.in);
         while(true){
-            displayAdminOption();
+            Display.displayAdminOption();
             String input = sc.nextLine();
             if(!Validation.checkString("[1-5]", input)){
                 System.out.println("Please enter number between 1-5!");
@@ -310,20 +239,7 @@ public class Menu {
 
     }
 
-    /**
-     * Display admin mode's menu and options
-     */
-    public static void displayAdminOption(){
-        System.out.println("---------------------------");
-        System.out.println("        Admin Mode");
-        System.out.println("---------------------------");
-        System.out.println("1. Create Product");
-        System.out.println("2. Update Product");
-        System.out.println("3. Delete Product");
-        System.out.println("4. View Product");
-        System.out.println("5. Back to menu");
-        System.out.println("Please choose an option: ");
-    }
+
 
     /**
      * Create a new product
@@ -389,7 +305,7 @@ public class Menu {
         System.out.println("      Update product");
         System.out.println("---------------------------");
 
-        for(int i=0; i<productList.size(); i++){
+        for(int i=0; i < productList.size(); i++){
             System.out.println(i+1 + ". " +productList.get(i).getName());
         }
         System.out.println();
@@ -400,14 +316,14 @@ public class Menu {
 
     /**
      * Update method to execute
-     * @param i
+     * @param index product's index for updating
      */
-    public static void updateProductProperty(int i){
+    public static void updateProductProperty(int index){
         Scanner sc = new Scanner(System.in);
         String newProductName;
         String newProductCode;
         String newProductPrice;
-        Product product = productList.get(i - 1);
+        Product product = productList.get(index - 1);
         while (true){
             System.out.println("Old product name: " + product.getName());
             System.out.println("New product name: ");

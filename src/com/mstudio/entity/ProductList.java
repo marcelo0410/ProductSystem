@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductList {
+
     public Integer capacity;
     public List<Product> productList;
 

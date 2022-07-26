@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Generate default data about products
+ */
 public class ProductGenerator {
     final Double cheesePrice = 5.95;
     final String cheeseCode = "CE";

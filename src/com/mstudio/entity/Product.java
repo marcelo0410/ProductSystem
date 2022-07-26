@@ -10,9 +10,18 @@ public class Product {
     Map<Integer, Double> packagingPrice;
 
 
+    /**
+     * Non-parameterized constructor
+     */
     public Product() {
     }
 
+    /**
+     * Parameterized constructor
+     * @param name Product's name
+     * @param code Product's code
+     * @param price Product's price
+     */
     public Product(String name, String code, Double price) {
         this.name = name;
         this.code = code;
@@ -20,6 +29,9 @@ public class Product {
         packagingPrice = new HashMap<>();
     }
 
+    /**
+     * Display product's bundle information
+     */
     public void displayBundlePrice(){
         for (Map.Entry<Integer, Double> set : packagingPrice.entrySet()) {
 
@@ -28,8 +40,6 @@ public class Product {
                     + set.getValue());
         }
     }
-
-
 
     public String getName() {
         return name;
